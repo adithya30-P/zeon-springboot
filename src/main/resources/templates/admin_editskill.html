@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin_dashboard}">
+<head><title layout:fragment="title">Edit Skill - Zeon Skill</title></head>
+<body>
+<div layout:fragment="main">
+
+<div class="skills-card mb-4">
+    <div class="section-header p-3">
+        <h4>Edit Skill Details</h4>
+        <form method="POST" th:action="@{/admin_editskill/{id}(id=${skill.id})}" class="d-grid gap-2">
+            <label class="form-label">Skill Name</label>
+            <input type="text" class="form-control" name="skill_name" th:value="${skill.name}" required>
+
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" required th:text="${skill.description}"></textarea>
+
+            <label class="form-label">Category</label>
+            <select class="form-select" name="category" required>
+                <option value="Programming" th:selected="${skill.category == 'Programming'}">Programming</option>
+                <option value="Design" th:selected="${skill.category == 'Design'}">Design</option>
+                <option value="Database" th:selected="${skill.category == 'Database'}">Database</option>
+                <option value="Marketing" th:selected="${skill.category == 'Marketing'}">Marketing</option>
+            </select>
+
+            <label class="form-label">Skill Level</label>
+            <select class="form-select" name="level" required>
+                <option value="Beginner" th:selected="${skill.level == 'Beginner'}">Beginner</option>
+                <option value="Intermediate" th:selected="${skill.level == 'Intermediate'}">Intermediate</option>
+                <option value="Advanced" th:selected="${skill.level == 'Advanced'}">Advanced</option>
+            </select>
+            <div class="d-flex justify-content-end mt-2">
+                <button type="submit" class="btn btn-primary">Save Skill Details</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="skills-card mb-4">
+    <div class="section-header p-3">
+        <h4 class="mb-3">Manage Questions</h4>
+
+        <p class="text-muted" th:if="${#lists.isEmpty(skill.questions)}">This skill has no questions yet. Add one below.</p>
+
+        <div class="question-block border rounded p-3 mb-3" th:each="question, qStat : ${skill.questions}">
+
+            <form method="POST" th:action="@{/admin_update_question/{id}(id=${question.id})}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label><b>Question <span th:text="${qStat.count}"></span></b></label>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-success">Update Question</button>
+                    </div>
+                </div>
+
+                <input type="text" class="form-control mb-2" name="question_text" th:value="${question.questionText}" required>
+
+                <label class="form-label small">Answers (select the correct one):</label>
+                <div class="input-group mb-2" th:each="answer : ${question.answers}">
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="radio" name="correct_answer"
+                               th:value="${answer.id}" th:checked="${answer.correct}" required>
+                    </div>
+                    <input type="text" class="form-control" th:name="${'answer_text_' + answer.id}" th:value="${answer.answerText}" required>
+                </div>
+            </form>
+
+            <form th:action="@{/admin_delete_question/{id}(id=${question.id})}" method="POST" class="mt-2 text-end"
+                  onsubmit="return confirm('Are you sure you want to delete this question?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete Question</button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div class="skills-card mb-4">
+    <div class="section-header p-3">
+        <h4>Add New Question</h4>
+        <form method="POST" th:action="@{/admin_add_question/{id}(id=${skill.id})}" class="d-grid gap-2">
+            <label class="form-label">New Question Text</label>
+            <input type="text" class="form-control" name="new_question_text" placeholder="What is the new question?" required>
+
+            <label class="form-label small">Answers (select the correct one):</label>
+            <div class="input-group" th:each="i : ${#numbers.sequence(0, 3)}">
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="radio" name="new_correct_answer" th:value="${i}" th:required="${i == 0}">
+                </div>
+                <input type="text" class="form-control" name="new_answers[]" th:placeholder="'Answer option ' + ${i + 1}" required>
+            </div>
+            <div class="d-flex justify-content-end mt-2">
+                <button type="submit" class="btn btn-info">+ Add This Question</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</body>
+</html>

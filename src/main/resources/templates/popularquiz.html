@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{home}">
+<head><title layout:fragment="title">Popular Quiz | Zeon Skill</title></head>
+<body>
+
+<div layout:fragment="content">
+    <main class="flex-fill pt-5">
+        <div class="container">
+            <div class="row">
+                <div class="mt-5">
+                    <h4><span style="color: #2f327D;">Explore Our</span> Quiz Categories</h4>
+                </div>
+            </div>
+
+            <div class="d-flex flex-nowrap overflow-auto mb-3 mt-5 p-2" style="scroll-behavior: smooth;">
+                <ul class="nav nav-pills flex-nowrap" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation" th:each="category, catStat : ${categories}">
+                        <button th:class="${'nav-link text-nowrap' + (catStat.first ? ' active' : '')}"
+                                th:id="${'pills-' + #strings.replace(category,' ','') + '-tab'}" data-bs-toggle="pill"
+                                th:attr="data-bs-target=${'#pills-' + #strings.replace(category,' ','')}, aria-controls=${'pills-' + #strings.replace(category,' ','')}"
+                                type="button" role="tab"
+                                th:aria-selected="${catStat.first}">
+                            <span th:text="${category}"></span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content" id="pills-tabContent">
+                <div th:each="category, catStat2 : ${categories}"
+                     th:class="${'tab-pane fade' + (catStat2.first ? ' show active' : '')}"
+                     th:id="${'pills-' + #strings.replace(category,' ','')}" role="tabpanel"
+                     th:attr="aria-labelledby=${'pills-' + #strings.replace(category,' ','') + '-tab'}" tabindex="0">
+
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
+                        <div class="col" th:each="skill : ${skillsByCategory.get(category)}">
+                            <div class="card border-0 h-100 p-4" style="background-color: #fff2e6;">
+                                <div class="card-img1"><img th:src="@{/images/python.png}" th:alt="${skill.name}"></div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${skill.name}"></h5>
+                                    <p class="txt" th:text="'(' + ${#lists.size(skill.questions)} + ' questions)'"></p>
+                                    <p class="card-text" th:text="${skill.description}"></p>
+                                </div>
+                                <div class="text-end">
+                                    <a th:href="@{/testqn/{id}(id=${skill.id})}" class="fw-semibold text-decoration-none" style="color:#007BFF;">
+                                        Start Quiz <i class="fas fa-long-arrow-alt-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

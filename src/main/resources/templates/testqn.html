@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{home}">
+<head>
+  <title layout:fragment="title" th:text="${skill.name} + ' Test | Zeon Skill'">Quiz Test | Zeon Skill</title>
+  <th:block layout:fragment="styles">
+  <style>
+    .question { display: none; }
+    .question.active { display: block; }
+  </style>
+  </th:block>
+</head>
+<body>
+
+<div layout:fragment="header">
+<header id="mainHeader" class="position-fixed top-0 start-0 w-100 z-3">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm border-0">
+        <div class="container">
+            <a th:href="@{/home}"><img th:src="@{/images/zeonskill.png}" alt="zeonskill" class="img-fluid" style="max-height:50px;"></a>
+            <button class="navbar-toggler d-md-block d-lg-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end d-md-block d-lg-none" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <img th:src="@{/images/zeonskill.png}" alt="zeonskill" class="w-25 ">
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 mb-3">
+                        <li class="nav-item"><a class="nav-link custom-nav-link active" href="#">About</a></li>
+                        <li class="nav-item"><a class="nav-link custom-nav-link" href="#">Why Choose Us</a></li>
+                        <li class="nav-item "><a class="nav-link custom-nav-link" th:href="@{/popularquiz}">Popular Quiz</a></li>
+                    </ul>
+                    <a th:href="@{/logout}" class="btn bg-body-tertiary text-dark border border-2 border-dark rounded-2 px-4 py-2 fs-6">Logout</a>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse d-none d-lg-flex justify-content-end align-items-center">
+                <ul class="navbar-nav me-3">
+                    <li class="nav-item mx-3"><a class="nav-link custom-nav-link active" href="#">About</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link custom-nav-link" href="#">Why Choose Us</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link custom-nav-link" th:href="@{/popularquiz}">Popular Quiz</a></li>
+                </ul>
+                <a th:href="@{/logout}" class="btn bg-body-tertiary text-dark border border-2 border-dark rounded-2 px-4 py-2 fs-6">Logout</a>
+            </div>
+        </div>
+    </nav>
+</header>
+</div>
+
+<div layout:fragment="content">
+<section class="w-100 d-flex align-items-center bg-dark mt-5 py-3 px-3">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        <div class="d-flex flex-column">
+            <small class="text-secondary fw-semibold">Quiz name</small>
+            <div class="text-white fs-5 fw-bold" th:text="${skill.name}"></div>
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid min-vh-100">
+    <div class="row align-items-center py-5">
+        <div class="col-12 col-md-7 col-lg-6">
+            <div class="px-4 px-md-5 mx-auto" style="max-width:720px;">
+
+                <form th:action="@{/test/{id}(id=${skill.id})}" method="POST" id="quizForm">
+                    <div id="quiz">
+                        <p th:if="${#lists.isEmpty(shuffledQuestions)}">There are no questions for this skill yet.</p>
+
+                        <div class="question" th:classappend="${qStat.first} ? ' active'"
+                             th:each="question, qStat : ${shuffledQuestions}"
+                             th:id="${'q' + qStat.count}">
+
+                            <div class="fs-5 fw-semibold text-dark">
+                                Question <span th:text="${qStat.count}"></span> of <span th:text="${#lists.size(shuffledQuestions)}"></span>:
+                            </div>
+
+                            <div class="mt-4 fs-5 text-dark" style="max-width:520px;" th:text="${question.questionText}"></div>
+
+                            <div class="mt-4" style="max-width:520px;">
+                                <div class="form-check mb-2" th:each="answer : ${question.answers}">
+                                    <input class="form-check-input" type="radio"
+                                           th:name="${'question_' + question.id}"
+                                           th:value="${answer.id}"
+                                           th:id="${'answer_' + answer.id}" required>
+                                    <label class="form-check-label w-100 border border-light text-secondary fw-bold rounded-3 px-3 py-2 bg-white"
+                                           th:for="${'answer_' + answer.id}" th:text="${answer.answerText}"></label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-5">
+                                <button th:if="${!qStat.first}" type="button" class="btn btn-secondary px-4 py-2 fw-bold rounded-3 prev-btn"
+                                        th:attr="data-question-num=${qStat.count}">Previous</button>
+                                <div th:if="${qStat.first}"></div>
+
+                                <button th:if="${qStat.last}" type="submit" class="btn btn-success px-4 py-2 fw-bold rounded-3">Submit</button>
+                                <button th:if="${!qStat.last}" type="button" class="btn btn-info text-white px-4 py-2 fw-bold rounded-3 next-btn"
+                                        th:attr="data-question-num=${qStat.count}">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="col-12 col-md-5 col-lg-6 d-none d-md-flex justify-content-center">
+            <div class="w-100" style="max-width:620px;">
+                <div class="bg-dark" style="height:24px;"></div>
+                <div class="position-relative overflow-hidden bg-white" style="height:360px;">
+                    <img th:src="@{/images/quiz.jpg}" alt="Artwork" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" />
+                </div>
+                <div class="bg-dark" style="height:24px;"></div>
+            </div>
+        </div>
+
+        <div class="col-12 d-block d-md-none mt-4">
+            <div class="w-100">
+                <div class="bg-dark" style="height:18px;"></div>
+                <div class="position-relative overflow-hidden bg-white" style="height:240px;">
+                    <img th:src="@{/images/quiz.jpg}" alt="Artwork" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" />
+                </div>
+                <div class="bg-dark" style="height:18px;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+<div layout:fragment="scripts">
+<script>
+    function showQuestion(n) {
+        const questions = document.querySelectorAll('.question');
+        if (n > questions.length || n < 1) return;
+        questions.forEach(q => q.classList.remove('active'));
+        document.getElementById('q' + n).classList.add('active');
+    }
+    document.querySelectorAll('.next-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const currentQuestionNum = parseInt(this.getAttribute('data-question-num'));
+            showQuestion(currentQuestionNum + 1);
+        });
+    });
+    document.querySelectorAll('.prev-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const currentQuestionNum = parseInt(this.getAttribute('data-question-num'));
+            showQuestion(currentQuestionNum - 1);
+        });
+    });
+</script>
+</div>
+</body>
+</html>

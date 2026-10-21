@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{home}">
+<head><title layout:fragment="title">Login | Zeon Skill</title></head>
+<body>
+<div layout:fragment="header"></div>
+<div layout:fragment="footer"></div>
+
+<div layout:fragment="content">
+<section class="w-100 px-3 d-flex justify-content-center align-items-center"
+    style="min-height:100vh; background-color:#f8f9fa;">
+    <div class="card p-4 mx-auto" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <a th:href="@{/home}">
+                <img th:src="@{/images/zeonskill.png}" alt="zeonskill" class="mb-3 img-fluid" style="max-width: 120px;">
+            </a>
+            <h3 class="card-title mt-2">Login</h3>
+            <p>Access your account</p>
+        </div>
+
+        <!-- Flash messages -->
+        <div th:each="msg : ${flashMessages}" th:class="'alert alert-' + ${msg.category} + ' text-center'" role="alert">
+            <span th:text="${msg.message}"></span>
+        </div>
+
+        <form th:action="@{/}" method="post">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="username" placeholder="Enter your email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="d-grid">
+                <button class="btn-login" type="submit">Login</button>
+            </div>
+        </form>
+
+        <p class="mt-3 text-center">
+            Don&rsquo;t have an account?
+            <a th:href="@{/registration}">Register here</a>
+        </p>
+    </div>
+</section>
+</div>
+</body>
+</html>
